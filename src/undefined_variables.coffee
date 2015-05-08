@@ -163,7 +163,8 @@ module.exports = class
         # Get the complexity of the current node.
         name = node.constructor.name
 
-        # Sets errorVariable from Try node for second block
+        # Set errorVariable from Try node for second block
+        # TODO: remove from @forceCatchVars if @level less than Try node level
         if name is 'Block' && @forceCatchVars[@level]?
             if @forceCatchVars[@level].blocks == 1
                 @newVariable @forceCatchVars[@level].variable
@@ -309,7 +310,7 @@ module.exports = class
         # http://stackoverflow.com/a/3537914/35247
         # JS Regex doesn't support capturing all of a repeating group.
         commentRegex = ///
-            global
+            \#\s*global
             (?:      # non capturing
                 \s
                 [^\s]+
@@ -319,7 +320,7 @@ module.exports = class
         line = node.locationData.first_line + 1
         tmp = commentRegex.exec(node.comment)
         return unless tmp?
-        for variable in tmp[0].split(' ')[1..]
+        for variable in tmp[0].split(' ')[2..]
             @currentScope[variable] = { defined: line, used: false }
 
     lintFor: (node) ->
